@@ -4,7 +4,7 @@ import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
 
 const App = () => {
-  const [imageUri, setImageUri] = useState(null);
+  const [imagesUri, setImagesUri] = useState([]);
 
   const selectImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -20,8 +20,19 @@ const App = () => {
     });
 
     if (!result.canceled) {
+      console.log(result.assets);
       const selectedImage = result.assets[0]; // Obtenemos la primera imagen seleccionada
-      setImageUri(selectedImage.uri);
+      // let nameImage = selectedImage.uri.split('/').pop();
+      // nameImage = nameImage.split(".")
+      // console.log(nameImage , 'splitttt');
+      // const objImg = {
+      //   uri: selectedImage.uri,
+      //   type: selectedImage.type,
+      //   name: nameImage[0],
+      // }
+      let resultImageUri = result.assets.map( imagen => imagen.uri)
+      console.log(resultImageUri);
+      setImagesUri(resultImageUri);
     }
   };
 
@@ -33,12 +44,23 @@ const App = () => {
       // }
 
       const formData = new FormData();
-      formData.append('file', {
-        uri: imageUri,
-        type: 'image/jpeg',
-        name: 'image.jpg',
-      });
+      imagesUri.forEach( (image , index)=> {
+        // console.log(image);
+        // formData.append(`file[${index}]`, {
+        //   uri: image.uri,
+        //   type: image.type,
+        //   name: image.name,
+        // });
+        formData.append(`file`,{
+          uri:image,
+          type:'image/jpeg',
+          name:`image${index}`
+        });
+
+      })
+      // formData.append('file', {...imagesUri})
       formData.append('funcion','subirImagen')
+      console.log(formData,' -------------- formdata');
       const response = await axios.post('https://c09f-181-33-163-15.ngrok-free.app/api/publicaciones', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -54,9 +76,15 @@ const App = () => {
     }
   };
 
+  console.log(imagesUri);
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      {imageUri && <Image source={{ uri: imageUri }} style={{ width: 200, height: 200, marginBottom: 20 }} />}
+      {/* {imagesUri &&  imagesUri?.map( ({uri },index) => {
+    
+        <Image key={index} source={ uri } style={{ width: 50, height: 50, marginBottom: 10 }} />
+      
+       } )} */}
+      
       <Button title="Seleccionar imagen" onPress={selectImage} />
       <Button title="Subir imagen" onPress={uploadImage} />
     </View>
