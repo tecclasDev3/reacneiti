@@ -27,24 +27,25 @@ const App = () => {
 
   const uploadImage = async () => {
     try {
-      if (!imageUri) {
-        Alert.alert('Error', 'No se ha seleccionado ninguna imagen');
-        return;
-      }
+      // if (!imageUri) {
+      //   Alert.alert('Error', 'No se ha seleccionado ninguna imagen');
+      //   return;
+      // }
 
       const formData = new FormData();
-      formData.append('image', {
+      formData.append('file', {
         uri: imageUri,
         type: 'image/jpeg',
         name: 'image.jpg',
       });
-
-      const response = await axios.post('http://example.com/upload', formData, {
+      formData.append('funcion','subirImagen')
+      const response = await axios.post('https://c09f-181-33-163-15.ngrok-free.app/api/publicaciones', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
+          'Authorization': 'Bearer ' + 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDgxZDVhMTI0ZmU1MjU4OTg4MDc5ZjEiLCJ0ZWxlZm9ubyI6IjMxMjU0MzAzMjEiLCJjb2RpZ29QYWlzIjoiNTciLCJub21icmUiOm51bGwsImNvcnJlbyI6bnVsbCwiZmVjaGFSZWdpc3RybyI6IjIwMjMtMDYtMDhUMTM6MjA6MzMuMDUxWiIsImlhdCI6MTY4NjIzMDQzM30.lhQYooHEkQ4Mbxw6bmVcQ5eenjlavB5Di5EhGc3e8yY'
         },
       });
-
+      
       console.log(response.data);
       Alert.alert('Éxito', 'La imagen se ha subido correctamente');
     } catch (error) {
