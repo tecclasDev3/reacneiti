@@ -1,92 +1,63 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Button, Image, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
+// import {Notifications } from 'expo'
+import * as Permissions from 'expo-permissions';
+import * as Notifications from 'expo-notifications';
 
-const App = () => {
-  const [imagesUri, setImagesUri] = useState([]);
+import ImageComponent from './components/ImageComponent.jsx'
 
-  const selectImage = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert('Permisos insuficientes', 'Necesitas otorgar permisos para acceder a la biblioteca de medios');
+const getToken = async() => {
+  // try {
+  //   const { status: existingStatus } = await Notifications.getPermissionsAsync();
+  //   let finalStatus = existingStatus;
+
+  //   if (existingStatus !== 'granted') {
+  //     const { status } = await Notifications.requestPermissionsAsync();
+  //     finalStatus = status;
+  //   }
+
+  //   if (finalStatus !== 'granted') {
+  //     return;
+  //   }
+
+  //   // const tokenData = await Notifications.getExpoPushTokenAsync({ projectId: 'plantillaneti' });
+  //   const projectId = 'plantillaneti'
+  //   // const projectId = 'eduar21616/reactprueba'
+  //   const tokenData = await Notifications.getExpoPushTokenAsync({projectId});
+  //   const token = tokenData.data;
+
+  //   console.log('Token de notificaciones push:', token);
+  // } catch (error) {
+    //   console.log('Error al obtener el token de notificaciones push:', error);
+  // }
+  const { status } = await Notifications.getPermissionsAsync();
+
+  if (status !== 'granted') {
+    const { status: newStatus } = await Notifications.requestPermissionsAsync();
+    if (newStatus !== 'granted') {
+      console.log('No se concedieron los permisos de notificaciones.');
       return;
     }
+  }
+  
+    const projectId = 'reactprueba'
+  const { data: token } = await Notifications.getExpoPushTokenAsync({projectId});
+  console.log('Token de notificaciones push:', token);
+}
 
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality: 1,
-      allowsMultipleSelection: true,
-    });
 
-    if (!result.canceled) {
-      console.log(result.assets);
-      const selectedImage = result.assets[0]; // Obtenemos la primera imagen seleccionada
-      // let nameImage = selectedImage.uri.split('/').pop();
-      // nameImage = nameImage.split(".")
-      // console.log(nameImage , 'splitttt');
-      // const objImg = {
-      //   uri: selectedImage.uri,
-      //   type: selectedImage.type,
-      //   name: nameImage[0],
-      // }
-      let resultImageUri = result.assets.map( imagen => imagen.uri)
-      console.log(resultImageUri);
-      setImagesUri(resultImageUri);
-    }
-  };
-
-  const uploadImage = async () => {
-    try {
-      // if (!imageUri) {
-      //   Alert.alert('Error', 'No se ha seleccionado ninguna imagen');
-      //   return;
-      // }
-
-      const formData = new FormData();
-      imagesUri.forEach( (image , index)=> {
-        // console.log(image);
-        // formData.append(`file[${index}]`, {
-        //   uri: image.uri,
-        //   type: image.type,
-        //   name: image.name,
-        // });
-        formData.append(`file`,{
-          uri:image,
-          type:'image/jpeg',
-          name:`image${index}`
-        });
-
-      })
-      // formData.append('file', {...imagesUri})
-      formData.append('funcion','subirImagen')
-      console.log(formData,' -------------- formdata');
-      const response = await axios.post(' https://6c0e-181-33-163-15.ngrok-free.app/api/publicaciones', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          'Authorization': 'Bearer ' + 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDgxZDVhMTI0ZmU1MjU4OTg4MDc5ZjEiLCJ0ZWxlZm9ubyI6IjMxMjU0MzAzMjEiLCJjb2RpZ29QYWlzIjoiNTciLCJub21icmUiOm51bGwsImNvcnJlbyI6bnVsbCwiZmVjaGFSZWdpc3RybyI6IjIwMjMtMDYtMDhUMTM6MjA6MzMuMDUxWiIsImlhdCI6MTY4NjIzMDQzM30.lhQYooHEkQ4Mbxw6bmVcQ5eenjlavB5Di5EhGc3e8yY'
-        },
-      });
-      
-      console.log(response.data);
-      Alert.alert('Éxito', 'La imagen se ha subido correctamente');
-    } catch (error) {
-      console.error(error);
-      Alert.alert('Error', 'Ocurrió un error al subir la imagen');
-    }
-  };
-
-  console.log(imagesUri);
+const App = () => {
+  
+  useEffect(()=>{
+  getToken()
+  },[])
+  
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      {/* {imagesUri &&  imagesUri?.map( ({uri },index) => {
-    
-        <Image key={index} source={ uri } style={{ width: 50, height: 50, marginBottom: 10 }} />
       
-       } )} */}
-      
-      <Button title="Seleccionar imagen" onPress={selectImage} />
-      <Button title="Subir imagen" onPress={uploadImage} />
+      <ImageComponent/>
     </View>
   );
 };
