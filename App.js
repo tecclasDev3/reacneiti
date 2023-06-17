@@ -61,7 +61,7 @@ const App = () => {
       // formData.append('file', {...imagesUri})
       formData.append('funcion','subirImagen')
       console.log(formData,' -------------- formdata');
-      const response = await axios.post(' https://6c0e-181-33-163-15.ngrok-free.app/api/publicaciones', formData, {
+      const response = await axios.post('https://34f3-181-33-163-15.ngrok-free.app/api/multimedia', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'Authorization': 'Bearer ' + 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDgxZDVhMTI0ZmU1MjU4OTg4MDc5ZjEiLCJ0ZWxlZm9ubyI6IjMxMjU0MzAzMjEiLCJjb2RpZ29QYWlzIjoiNTciLCJub21icmUiOm51bGwsImNvcnJlbyI6bnVsbCwiZmVjaGFSZWdpc3RybyI6IjIwMjMtMDYtMDhUMTM6MjA6MzMuMDUxWiIsImlhdCI6MTY4NjIzMDQzM30.lhQYooHEkQ4Mbxw6bmVcQ5eenjlavB5Di5EhGc3e8yY'
